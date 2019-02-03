@@ -1,18 +1,17 @@
-
 fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
   .then((resp) => resp.json()) // Transform the data into json
   .then(function (data) {
-    console.log(data);
 
     const padding = { left: 60, top: 0, right: 30, bottom: 100 }
 
     const width = 1000 - padding.left - padding.right;
-    const height = 600 - padding.top - padding.bottom;
+    const height = 575 - padding.top - padding.bottom;
 
     const year = data.monthlyVariance.map((arr) => arr.year)
     const month = data.monthlyVariance.map((arr) => arr.month)
     const allmonths = d3.max(year) - d3.min(year);
 
+    
   
     let monthName = (num) => {
       switch (num) {
@@ -103,18 +102,18 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
 
     const xScale = d3.scaleLinear()
       .domain([d3.min(year), d3.max(year)])
-      .range([padding.left, 1000 - padding.right])
+      .range([padding.left, width - padding.right])
 
     const yScale = d3.scaleLinear()
       .domain([d3.min(month),d3.max(month)])
-      .range([600 - padding.bottom, padding.bottom])
+      .range([height - padding.bottom , 20])
 
      const svgContainer = d3.select("#svgWrapper")
        .append("svg")
        .attr("width", width)
-       .attr("height", height)
+       .attr("height", height + 100)
        .attr("id", "mainSvg")
-       .style("background-color", "yellow")
+       .style("background-color", "lightblue")
       
 
     const rect = d3.select('#mainSvg')
@@ -125,7 +124,7 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .attr("width", width * (1 / allmonths))
       .attr("height", height * (1 / 12))
       .attr("x", (d) => xScale(d.year))
-      .attr("y", (d) => height - yScale(d.month))
+      .attr("y", (d) => height - 80 - yScale(d.month))
       /***        Calculate the variance                               *////
       .style("fill", (d) => {
         const absVar = d.variance + 8.66;
@@ -163,5 +162,69 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .text((d) => tempSpace(d.month, d.variance) + d.variance.toFixed(1) + "\u2103")
       .attr("class", "text-center") 
 
+    const xAxis = d3.axisBottom(xScale)
+      .tickFormat(d3.format("d"));
 
+    const yAxis = d3.axisLeft(yScale)
+      .tickFormat((d)=> monthName(d))
+
+    svgContainer.append("g")
+      .attr("transform", "translate(0," + (height - 60) + ")")
+      .call(xAxis);
+    svgContainer.append("g")
+      .attr("transform", "translate(" + padding.left + ", " + 0 + ")")
+      .call(yAxis)
+
+    // add legend   
+
+    svgContainer.append("g")
+      .attr("id", "legend")
+      .attr("transform", "translate(100, 500)");
+
+    var legend = svgContainer.selectAll('.legend')
+      .data(data.monthlyVariance)
+      .enter()
+      .append('g')
+      .attr("transform", "translate(60, 440)");
+
+    var legendWrapper = legend.append('rect')
+      .attr('width', 500)
+      .attr('height', 45)
+      .style('fill', "hsl(180, 50%, 85%)")
+      .style('stroke', 'blue');
+
+    legendWrapper.append('rect')
+      .data([1, 2, 3])
+      .enter()
+      .append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .style('fill', "hsl(180, 50%, 85%)")
+      .style('stroke', 'white');
+
+
+  /*
+    legend.append('text')
+      .attr('x', 20)
+      .attr('y', 20)
+      .text("No doping allegations");
+
+    legend.append('circle')
+      .attr('cx', 225)
+      .attr('cy', 16)
+      .attr('r', 5)
+      .style('fill', "hsl(120, 50%, 30%)")
+
+
+    legend.append('text')
+      .attr('x', 20)
+      .attr('y', 40)
+      .text("Riders with doping allegations")
+
+    legend.append('circle')
+      .attr('cx', 225)
+      .attr('cy', 36)
+      .attr('r', 5)
+      .style('fill', "hsl(240, 50%, 30%)")
+      */
   })
