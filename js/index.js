@@ -11,7 +11,48 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
     const month = data.monthlyVariance.map((arr) => arr.month)
     const allmonths = d3.max(year) - d3.min(year);
 
-    
+
+    let switchNum = (num) => {
+      switch (num) {
+        case 1:
+          return 12;
+          break;
+        case 2:
+          return 11;
+          break;
+        case 3:
+          return 10;
+          break;
+        case 4:
+          return 9;
+          break;
+        case 5:
+          return 8;
+          break;
+        case 6:
+          return 7;
+          break;
+        case 7:
+          return 6;
+          break;
+        case 8:
+          return 5;
+          break;
+        case 9:
+          return 4;
+          break;
+        case 10:
+          return 3;
+          break;
+        case 11:
+          return 2;
+          break;
+        case 12:
+          return 1;
+          break;
+      }
+    }
+
   
     let monthName = (num) => {
       switch (num) {
@@ -97,9 +138,6 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       }
     }
 
-
-
-
     const xScale = d3.scaleLinear()
       .domain([d3.min(year), d3.max(year)])
       .range([padding.left, width - padding.right])
@@ -113,7 +151,7 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
        .attr("width", width)
        .attr("height", height + 100)
        .attr("id", "mainSvg")
-       .style("background-color", "lightblue")
+       .style("background-color", "white")
       
 
     const rect = d3.select('#mainSvg')
@@ -125,6 +163,10 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .attr("height", height * (1 / 12))
       .attr("x", (d) => xScale(d.year))
       .attr("y", (d) => height - 80 - yScale(d.month))
+      .attr("class", "cell")
+      .attr("data-month",(d)=>d.month)
+      .attr("data-year", (d)=>d.year)
+      .attr("data-temp", (d) => d.variance + 8.66)
       /***        Calculate the variance                               *////
       .style("fill", (d) => {
         const absVar = d.variance + 8.66;
@@ -154,6 +196,8 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
         }
       })
       .append('title') 
+      .attr("id", "tooltip")
+      .attr("data-year", (d)=>d.year)
       .text((d) => monthName(d.month) + ", " + d.year + "\n")
       .append('title')
       .text((d) => tempSpace(d.month, (d.variance+8.66)) + (d.variance + 8.66).toFixed(1) + "\u2103\n")
@@ -163,19 +207,24 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .attr("class", "text-center") 
 
     const xAxis = d3.axisBottom(xScale)
-      .tickFormat(d3.format("d"));
+       .tickFormat(d3.format("d"));
+  
 
     const yAxis = d3.axisLeft(yScale)
-      .tickFormat((d)=> monthName(d))
+       .tickFormat((d) => monthName(switchNum(d)));
 
     svgContainer.append("g")
       .attr("transform", "translate(0," + (height - 60) + ")")
+      .attr("id","x-axis")
       .call(xAxis);
+
     svgContainer.append("g")
       .attr("transform", "translate(" + padding.left + ", " + 0 + ")")
+      .attr("id", "y-axis")
       .call(yAxis)
+   
 
-    // add legend   
+    // Legend   
 
     svgContainer.append("g")
       .attr("id", "legend")
@@ -187,44 +236,158 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .append('g')
       .attr("transform", "translate(60, 440)");
 
-    var legendWrapper = legend.append('rect')
-      .attr('width', 500)
-      .attr('height', 45)
-      .style('fill', "hsl(180, 50%, 85%)")
-      .style('stroke', 'blue');
+     legend.append('rect')
+      .attr('width', 550)
+      .attr('height', 55)
+      .style('fill', "white")
+      
 
-    legendWrapper.append('rect')
-      .data([1, 2, 3])
-      .enter()
-      .append('rect')
+    legend.append('rect')
       .attr('width', 50)
       .attr('height', 30)
-      .style('fill', "hsl(180, 50%, 85%)")
-      .style('stroke', 'white');
-
-
-  /*
-    legend.append('text')
-      .attr('x', 20)
-      .attr('y', 20)
-      .text("No doping allegations");
-
-    legend.append('circle')
-      .attr('cx', 225)
-      .attr('cy', 16)
-      .attr('r', 5)
-      .style('fill', "hsl(120, 50%, 30%)")
-
+      .style('fill', "rgb(49, 54, 149)")
+      .style('stroke', 'black');
 
     legend.append('text')
-      .attr('x', 20)
-      .attr('y', 40)
-      .text("Riders with doping allegations")
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 40)
+      .attr('y', 45)
+      .text("2.8")
 
-    legend.append('circle')
-      .attr('cx', 225)
-      .attr('cy', 36)
-      .attr('r', 5)
-      .style('fill', "hsl(240, 50%, 30%)")
-      */
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 50)
+      .style('fill', "rgb(69, 117, 180)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 90)
+      .attr('y', 45)
+      .text("3.9")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 100)
+      .style('fill', "rgb(116, 173, 209)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 140)
+      .attr('y', 45)
+      .text("5.0")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 150)
+      .style('fill', "rgb(171, 217, 233)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 190)
+      .attr('y', 45)
+      .text("6.1")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 200)
+      .style('fill', "rgb(224, 243, 248)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 240)
+      .attr('y', 45)
+      .text("7.2")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 250)
+      .style('fill', "rgb(255, 255, 191)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 290)
+      .attr('y', 45)
+      .text("8.3")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 300)
+      .style('fill', "rgb(254, 224, 144)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 340)
+      .attr('y', 45)
+      .text("9.5")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 350)
+      .style('fill', "rgb(253, 174, 97)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 383)
+      .attr('y', 45)
+      .text("10.6")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 400)
+      .style('fill', "rgb(244, 109, 67)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 433)
+      .attr('y', 45)
+      .text("11.7")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 450)
+      .style('fill', "rgb(215, 48, 39)")
+      .style('stroke', 'black');
+
+    legend.append('text')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 483)
+      .attr('y', 45)
+      .text("12.8")
+
+    legend.append('rect')
+      .attr('width', 50)
+      .attr('height', 30)
+      .attr('x', 500)
+      .style('fill', "rgb(165, 0, 38)")
+      .style('stroke', 'black');
+ 
+
+
   })
