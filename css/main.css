@@ -3,3 +3,11 @@
   text-align: center;
 }
 
+#svgWrapper {
+  display: flex;
+  justify-content: center;
+}
+
+#legend {
+  background-color: purple;
+}
