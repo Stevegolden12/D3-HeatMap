@@ -1,3 +1,4 @@
+
 fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/master/global-temperature.json')
   .then((resp) => resp.json()) // Transform the data into json
   .then(function (data) {
@@ -7,10 +8,6 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
 
     const width = 1000 - padding.left - padding.right;
     const height = 600 - padding.top - padding.bottom;
-    /*
-    xScale = d3.scaleLinear()
-      .domain(d3.min(d.Year))
-      */
 
     const year = data.monthlyVariance.map((arr) => arr.year)
     const month = data.monthlyVariance.map((arr) => arr.month)
@@ -42,28 +39,31 @@ fetch('https://raw.githubusercontent.com/freeCodeCamp/ProjectReferenceData/maste
       .attr("height", height * (1/12))
       .attr("x", (d) => xScale(d.year))
       .attr("y", (d) => height - yScale(d.month))
-      .style("fill",(d) => {
-        if (d.variance*8.66 < 2.8) {
+      /***        Calculate the variance                               *////
+      .style("fill", (d) => {
+        const absVar = (d.variance * 8.66) + 8.66;
+ 
+        if (absVar < 2.8) {
           return "rgb(49, 54, 149)"
-        } else if (d.variance*8.66 > 2.8 && d.variance*8.66 < 3.9) {
+        } else if (absVar > 2.8 && absVar < 3.9) {
           return "rgb(69, 117, 180)"
-        } else if (d.variance*8.66 > 3.9 && d.variance*8.66 < 5.0) {
+        } else if (absVar > 3.9 && absVar < 5.0) {
           return "rgb(116, 173, 209)"
-        } else if (d.variance*8.66 > 5.0 && d.variance*8.66 < 6.1) {
+        } else if (absVar > 5.0 && absVar < 6.1) {
           return "rgb(171, 217, 233)"
-        } else if (d.variance*8.66 > 6.1 && d.variance*8.66 < 7.2) {
+        } else if (absVar > 6.1 && absVar < 7.2) {
           return "rgb(224, 243, 248)"
-        } else if (d.variance*8.66 > 7.2 && d.variance*8.66 < 8.3) {
+        } else if (absVar > 7.2 && absVar < 8.3) {
           return "rgb(255, 255, 191)"
-        } else if (d.variance*8.66 > 8.3 && d.variance*8.66 < 9.5) {
+        } else if (absVar > 8.3 && absVar < 9.5) {
           return "rgb(254, 224, 144)"
-        } else if (d.variance*8.66 > 9.5 && d.variance*8.66 < 10.6) {
+        } else if (absVar > 9.5 && absVar < 10.6) {
           return "rgb(253, 174, 97)"
-        } else if (d.variance*8.66 > 10.6 && d.variance*8.66 < 11.7) {
+        } else if (absVar > 10.6 && absVar < 11.7) {
           return "rgb(244, 109, 67)"
-        } else if (d.variance*8.66 > 11.7 && d.variance*8.66< 12.8) {
+        } else if (absVar > 11.7 && absVar < 12.8) {
           return "rgb(215, 48, 39)"
-        } else if (d.variance*8.66 > 12.8) {
+        } else if (absVar > 12.8) {
           return "rgb(165, 0, 38)"
         }
       })
